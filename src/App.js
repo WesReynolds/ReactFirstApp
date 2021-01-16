@@ -5,17 +5,19 @@ import axios from 'axios';
 
 class App extends Component {
    makePostCall(character){
-   return axios.post('http://localhost:5000/users', character)
+   axios.post('http://localhost:5000/users', character)
       .then(function (response) {
       console.log(response);
-      return (response.status === 201);
+      if (response.status === 201){
+         return response.data;
+      }
       })
     .catch(function (error) {
       console.log(error);
       return false;
       });
-    }
-
+   }
+    
     handleSubmit = character => {
    this.makePostCall(character).then( callResult => {
       if (callResult === true) {
@@ -51,8 +53,17 @@ class App extends Component {
       this.setState({
          characters: characters.filter((character, i) => {
             if (i === index){ 
-            axios.delete('http://localhost:5000/users', character);
-            }
+            axios.delete('http://localhost:5000/users', character)
+            .then(function (response) {
+            console.log(response);
+            return (response.status === 405);
+            })
+            .catch(function (error) {
+        console.log(error);
+        return false;
+        });
+    }
+
             return i !== index
          }),
       })
